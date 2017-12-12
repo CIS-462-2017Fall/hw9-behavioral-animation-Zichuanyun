@@ -84,6 +84,8 @@ void BehaviorViewer::initializeGui()
 	TwAddButton(m_TwBehaviorBar, "Reset", onResetCb, this, "");
 
 	//TODO: Add your code here to create additional GUI Variables
+
+	TwAddVarRW(m_TwBehaviorBar, "New Variable", TW_TYPE_DOUBLE, new double(717.0), "");
 }
 
 

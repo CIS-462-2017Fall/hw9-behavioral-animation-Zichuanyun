@@ -149,7 +149,6 @@ void BehaviorController::control(double deltaT)
 // The desired velocity vector is then used to compute the desired speed (vd) and direction (thetad) commands
 
 {
-
 	if (mpActiveBehavior)
 	{ 
 		m_Vdesired = mpActiveBehavior->calcDesiredVel(this);
@@ -162,16 +161,24 @@ void BehaviorController::control(double deltaT)
 
 		// TODO: insert your code here to compute m_force and m_torque
 
+		//Init
+		gVelKv = 10;
+		gOriKv = 32;
+		gOriKp = 256;
 
+		m_vd = m_Vdesired.Length();
 
+		vec3 m_vdVec = vec3(0, 0, m_vd);
+		double thetaY = atan2(m_Vdesired[_X], m_Vdesired[_Z]);
+		ClampAngle(thetaY);
 
+		vec3 theta = vec3(0, thetaY, 0);
 
+		double dangle = theta[1] - m_state[_Y][1];
+		ClampAngle(dangle);
 
-
-
-
-
-
+		m_force = gMass * (gVelKv * m_vdVec - gVelKv * m_state[2]);
+		m_torque = gInertia * (gOriKp * vec3(0, dangle, 0) - gOriKv * m_stateDot[_Y]);
 
 
 		// when agent desired agent velocity and actual velocity < 2.0 then stop moving
@@ -212,9 +219,17 @@ void BehaviorController::computeDynamics(vector<vec3>& state, vector<vec3>& cont
 	// Compute the stateDot vector given the values of the current state vector and control input vector
 	// TODO: add your code here
 
+	//std::cout << state.size() << std::endl;
+	//std::cout << controlInput.size() << std::endl;
 
+	mat3 rotation;
 
+	rotation.FromEulerAngles(mat3::ZXY, state[1]);
 
+	stateDot[0] = rotation * state[2];
+	stateDot[1] = rotation * state[3];
+	stateDot[2] = force / gMass;
+	stateDot[3] = torque / gInertia;
 
 }
 
@@ -224,13 +239,19 @@ void BehaviorController::updateState(float deltaT, int integratorType)
 	//  this should be similar to what you implemented in the particle system assignment
 
 	// TODO: add your code here
-	
-
-
-
-
-
-
+	if (integratorType == 0) {
+		for (int i = 0; i < m_state.size(); i++) {
+			m_state[i] = m_state[i] + m_stateDot[i] * deltaT;
+		}
+	}
+	else if (integratorType == 1) {
+		//nothing
+	}
+	else {
+		for (int i = 0; i < m_state.size(); i++) {
+			m_state[i] = m_state[i] + m_stateDot[i] * deltaT;
+		}
+	}
 
 	//  given the new values in m_state, these are the new component state values 
 	m_Pos0 = m_state[POS];
@@ -241,13 +262,23 @@ void BehaviorController::updateState(float deltaT, int integratorType)
 	//  Perform validation check to make sure all values are within MAX values
 	// TODO: add your code here
 
+	//Truncate each value
+	if (m_Euler[_Y] < -2 * M_PI) {
+		m_Euler[_Y] += 2 * M_PI;
+	}
 
+	if (m_Euler[_Y] > 2 * M_PI) {
+		m_Euler[_Y] -= 2 * M_PI;
+	}
+	
+	if (m_AVelB.Length() > gMaxAngularSpeed) {
+		m_AVelB = m_AVelB.Normalize() * gMaxAngularSpeed;
+	}
 
-
-
-
-
-
+	if (m_VelB.Length() > gMaxSpeed) {
+		m_VelB = m_VelB.Normalize() * gMaxSpeed;
+	}
+	
 	// update the guide orientation
 	// compute direction from nonzero velocity vector
 	vec3 dir;
@@ -262,6 +293,11 @@ void BehaviorController::updateState(float deltaT, int integratorType)
 		dir = m_Vel0;
 		m_lastVel0 = m_Vel0;
 	}
+
+	mat3 rotation;
+	vec3 angle = vec3(m_state[1][0], m_state[1][1], m_state[1][2]);
+	rotation.FromEulerAngles(mat3::ZXY, angle);
+	m_Vel0 = rotation * m_state[2];
 
 	dir.Normalize();
 	vec3 up(0.0, 1.0, 0.0);
