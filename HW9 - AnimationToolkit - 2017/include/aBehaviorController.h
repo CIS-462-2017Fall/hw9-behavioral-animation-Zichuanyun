@@ -78,6 +78,7 @@ public:
 	
 	//updates Agent state
 	virtual void updateState(float deltaT, int integratorType);
+	vector<AActor>* m_AgentList;  // a list of all the other agents in the world
 
 
 
@@ -91,7 +92,6 @@ protected:
 	BehaviorType m_BehaviorType;
 	BehaviorMap m_BehaviorList;  // maintains a list of behaviors available to agent
 
-	vector<AActor>* m_AgentList;  // a list of all the other agents in the world
 	vector<Obstacle>* m_ObstacleList;          // a list of all the obstacles in the world
 	// end new
 

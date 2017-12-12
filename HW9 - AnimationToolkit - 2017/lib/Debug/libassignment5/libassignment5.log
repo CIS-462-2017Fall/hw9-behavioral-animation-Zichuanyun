@@ -1,7 +1,13 @@
-﻿  aBehaviorController.cpp
-  aBehaviors.cpp
-  Generating Code...
-  libassignment5.vcxproj -> D:\MyHomeWork\HW9_BehavioralAnimation\HW9 - AnimationToolkit - 2017\libsrc\animation\..\..\lib\libassignment5d.lib
+﻿  aBehaviors.cpp
+aBehaviors.cpp(244): warning C4101: 'dist': unreferenced local variable
+aBehaviors.cpp(405): warning C4018: '<': signed/unsigned mismatch
+aBehaviors.cpp(452): warning C4018: '<': signed/unsigned mismatch
+aBehaviors.cpp(498): warning C4018: '<': signed/unsigned mismatch
+aBehaviors.cpp(545): warning C4018: '<': signed/unsigned mismatch
+aBehaviors.cpp(557): warning C4018: '<': signed/unsigned mismatch
+aBehaviors.cpp(576): warning C4018: '<': signed/unsigned mismatch
+aBehaviors.cpp(634): warning C4018: '<': signed/unsigned mismatch
+  libassignment5.vcxproj -> F:\UPenn\CIS562\hw9-behavioral-animation-Zichuanyun\HW9 - AnimationToolkit - 2017\libsrc\animation\..\..\lib\libassignment5d.lib
   aActor.h
   aBehaviorController.h
   aBehaviors.h
